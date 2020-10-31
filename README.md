@@ -21,8 +21,8 @@ Possible arguments:<br />
 * Which infected persons recover or die is randomly selected.
 * Persons that have already been infected and recovered cannot be infected again.
 ## Example:<br />
-* <kbd><img src="https://github.com/Yoan-D/simple-pandemic-simulation/blob/main/example.gif" /></kbd><br />
-<br />
+* <kbd><img src="https://github.com/Yoan-D/simple-pandemic-simulation/blob/main/example.gif" /></kbd>
+
 ## ToDo:<br />
 * Introduce an export function for the simulation data into json / csv. <br />
 

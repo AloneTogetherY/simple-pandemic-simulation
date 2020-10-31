@@ -1,1 +1,1 @@
-# simple-pandemic-simulation
+# A Simple Pandemic Simulation

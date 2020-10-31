@@ -23,5 +23,5 @@ Possible arguments:<br />
 ## Example:<br />
 * Coming
 ## ToDo:<br />
-* Introduce an export function for the simulationd data into json / csv. <br />
+* Introduce an export function for the simulation data into json / csv. <br />
 

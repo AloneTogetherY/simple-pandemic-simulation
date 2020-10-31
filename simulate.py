@@ -9,9 +9,6 @@ import numpy as np
 from matplotlib import pylab
 from matplotlib.animation import FuncAnimation
 
-plt.rcParams[
-    'animation.ffmpeg_path'] = 'C:/Users/dimit/ffmpeg-20200513-b12b053-win64-static/ffmpeg-20200513-b12b053-win64-static/bin/ffmpeg.exe'
-
 
 def decision(probability):
     return random.random() < probability
@@ -26,17 +23,16 @@ def get_max_length(line_rs, line_ds):
     return length + 2
 
 
-def create_legend(plot):
+def create_legend():
     classes = ['not infected', 'infected', 'recovered', 'died']
     class_colors = ['grey', 'red', 'lime', 'black', ]
     recs = []
     for i in range(0, len(class_colors)):
         recs.append(mpatches.Rectangle((0, 0), 1, 1, fc=class_colors[i]))
-    plot.legend(recs, classes, loc='upper center', bbox_to_anchor=(0.50, 2.6), ncol=4)
-    return plot
+    plt.legend(recs, classes, loc='upper center', bbox_to_anchor=(0.50, 2.6), ncol=4)
 
-
-def random_condition_change(infection_map, confirmed_deaths, confirmed_immune, line_deaths, line_recoveries):
+def random_condition_change(infection_map, confirmed_deaths, confirmed_immune, line_deaths, line_recoveries,
+                            scatter_plots):
     milliseconds = 1000
     d = 0
     r = 0
@@ -69,10 +65,10 @@ def random_condition_change(infection_map, confirmed_deaths, confirmed_immune, l
     line_recoveries.append(r)
 
 
-def create_simulation_data(no_of_pts, dirs, sim_steps):
+def create_simulation_data(no_of_pts, dirs, sim_steps, xrange, yrange):
     xs, ys = [], []
-    x = [random.uniform(x_range_minus, x_range) for _ in range(no_of_pts)]
-    y = [random.uniform(y_range_minus, y_range) for _ in range(no_of_pts)]
+    x = [random.uniform(xrange[0], xrange[1]) for _ in range(no_of_pts)]
+    y = [random.uniform(yrange[0], yrange[1]) for _ in range(no_of_pts)]
     for index, (xtemp, ytemp) in enumerate(zip(x, y)):
         x_list, y_list = [], []
         x_list.append(xtemp)
@@ -109,7 +105,17 @@ def setup_plots():
     return fig, ax, ax1, ax2, scatter_plots, line_plot, line_plots
 
 
-def animate(plt, save_simulation, interval_arg):
+def animate():
+    directions = np.array([0, .1, .2, .3, -.1, -.2, -.3])
+    x_range_minus = -5
+    x_range = 5
+    y_range_minus = -5
+    y_range = 5
+
+    fig, ax, ax1, ax2, scatter_plots, line_plot, line_plots = setup_plots()
+    xs, ys = create_simulation_data(no_of_points, directions, simulation_steps, [x_range_minus, x_range],
+                                    [y_range, y_range_minus])
+
     infection_frame_map = {}
     confirmed_deaths = []
     confirmed_immune = []
@@ -143,7 +149,8 @@ def animate(plt, save_simulation, interval_arg):
         line_infections.append(infected)
 
         # random choose persons which recover or die
-        random_condition_change(inf_map, confirmed_deaths, confirmed_immune, line_deaths, line_recoveries)
+        random_condition_change(inf_map, confirmed_deaths, confirmed_immune, line_deaths, line_recoveries,
+                                scatter_plots)
 
         frames_till_now = [i for i in range(frame)]
         for s, n in zip(scatter_plots, range(no_of_points)):
@@ -167,11 +174,11 @@ def animate(plt, save_simulation, interval_arg):
         ax.set_ylim(min(y_values) - 1, max(y_values) + 1)
 
     ax.set_title('Pandemic Simulation')
-    plt = create_legend(plt)
-    ani = FuncAnimation(fig, update, interval=interval_arg, frames=simulation_steps,
+    create_legend()
+    ani = FuncAnimation(fig, update, interval=args.interval, frames=simulation_steps,
                         fargs=(xs, ys, infection_frame_map),
                         init_func=init, repeat=False)
-    if save_simulation:
+    if args.save_simulation:
         name = '1.gif'
         ani.save(name, writer='imagemagick', fps=80)
     else:
@@ -209,7 +216,7 @@ def define_args():
     parser.add_argument("-interval", default=200,
                         help="Define the the delay between frames in ms ",
                         type=int)
-    parser.add_argument("-save_file", default=True,
+    parser.add_argument("-save_simulation", default=False,
                         help="(True/False) Save simulation as gif",
                         type=bool)
     return parser.parse_args()
@@ -230,13 +237,4 @@ if __name__ == '__main__':
     max_time_to_death = args.max_time_to_death  # ms
     infected_indices = [i for i in range(no_of_initial_infected)]
 
-    directions = np.array([0, .1, .2, .3, -.1, -.2, -.3])
-    x_range_minus = -5
-    x_range = 5
-    y_range_minus = -5
-    y_range = 5
-
-    fig, ax, ax1, ax2, scatter_plots, line_plot, line_plots = setup_plots()
-    xs, ys = create_simulation_data(no_of_points, directions, simulation_steps)
-
-    animate(plt=plt, save_simulation=args.save_file, interval_arg=args.interval)
+    animate()

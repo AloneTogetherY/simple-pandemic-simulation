@@ -15,10 +15,13 @@ Possible arguments:<br />
    ```-max_time_to_death``` Define the maximum time to die in ms<br />
    ```-interval``` Define the the delay between frames in ms<br />
    ```-save_file``` (True/False) Save simulation as gif <br /><br />
-## ToDo:<br />
-* Introduce an export function for the simulationd data into json / csv. <br />
 ## Assumptions:<br />
 * Whether a person was sick or not can be deduced from their recovered or died status.
 * Non-infected points that near other infected points within the given distance tolerance are immediately infected.
 * Which infected persons recover or die is randomly selected.
 * Persons that have already been infected and recovered cannot be infected again.
+## Example:<br />
+* Coming
+## ToDo:<br />
+* Introduce an export function for the simulationd data into json / csv. <br />
+

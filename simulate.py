@@ -114,7 +114,7 @@ def animate():
 
     fig, ax, ax1, ax2, scatter_plots, line_plot, line_plots = setup_plots()
     xs, ys = create_simulation_data(no_of_points, directions, simulation_steps, [x_range_minus, x_range],
-                                    [y_range, y_range_minus])
+                                    [y_range_minus, y_range])
 
     infection_frame_map = {}
     confirmed_deaths = []

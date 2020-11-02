@@ -31,8 +31,9 @@ def create_legend():
         recs.append(mpatches.Rectangle((0, 0), 1, 1, fc=class_colors[i]))
     plt.legend(recs, classes, loc='upper center', bbox_to_anchor=(0.50, 2.6), ncol=4)
 
+
 def random_condition_change(infection_map, confirmed_deaths, confirmed_immune, line_deaths, line_recoveries,
-                            scatter_plots):
+                            scatter_plots, x, y, frame):
     milliseconds = 1000
     d = 0
     r = 0
@@ -58,11 +59,19 @@ def random_condition_change(infection_map, confirmed_deaths, confirmed_immune, l
                         if len(confirmed_deaths) < int(death_rate):
                             scatter_plots[this].set_color('black')
                             scatter_plots[this].set_marker('P')
+
                             confirmed_deaths.append(this)
                             infected_indices.remove(key)
                             d += 1
+                            current_x = x[this][frame]
+                            current_y = y[this][frame]
+                            for i in range(len(x[this][frame:])):
+                                x[this][i] = current_x
+                            for i in range(len(y[this][frame:])):
+                                y[this][i] = current_y
     line_deaths.append(d)
     line_recoveries.append(r)
+    return x, y
 
 
 def create_simulation_data(no_of_pts, dirs, sim_steps, xrange, yrange):
@@ -149,8 +158,8 @@ def animate():
         line_infections.append(infected)
 
         # random choose persons which recover or die
-        random_condition_change(inf_map, confirmed_deaths, confirmed_immune, line_deaths, line_recoveries,
-                                scatter_plots)
+        xss, yss = random_condition_change(inf_map, confirmed_deaths, confirmed_immune, line_deaths, line_recoveries,
+                                scatter_plots, xss, yss, frame)
 
         frames_till_now = [i for i in range(frame)]
         for s, n in zip(scatter_plots, range(no_of_points)):
@@ -188,7 +197,7 @@ def animate():
 def define_args():
     # constraints
     parser = argparse.ArgumentParser()
-    parser.add_argument("-simulation_steps", default=500, help="Define the number of simulation steps",
+    parser.add_argument("-simulation_steps", default=300, help="Define the number of simulation steps",
                         type=int)
     parser.add_argument("-no_of_points", default=100, help="Define the number of points / population",
                         type=int)
@@ -216,7 +225,7 @@ def define_args():
     parser.add_argument("-interval", default=200,
                         help="Define the the delay between frames in ms ",
                         type=int)
-    parser.add_argument("-save_simulation", default=False,
+    parser.add_argument("-save_simulation", default=True,
                         help="(True/False) Save simulation as gif",
                         type=bool)
     return parser.parse_args()

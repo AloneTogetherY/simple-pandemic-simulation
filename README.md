@@ -23,6 +23,5 @@ Possible arguments:<br />
 * Non-infected points that near other infected points within the given distance tolerance are immediately infected.
 * Which infected persons recover or die is randomly selected.
 * Persons that have already been infected and recovered cannot be infected again.
-## ToDo:<br />
-* Introduce an export function for the simulation data into json / csv. <br />
+
 

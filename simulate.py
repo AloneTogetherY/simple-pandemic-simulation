@@ -33,7 +33,7 @@ def create_legend():
 
 
 def random_condition_change(infection_map, confirmed_deaths, confirmed_immune, line_deaths, line_recoveries,
-                            scatter_plots, x, y, frame):
+                            scatter_plots):
     milliseconds = 1000
     d = 0
     r = 0
@@ -59,19 +59,12 @@ def random_condition_change(infection_map, confirmed_deaths, confirmed_immune, l
                         if len(confirmed_deaths) < int(death_rate):
                             scatter_plots[this].set_color('black')
                             scatter_plots[this].set_marker('P')
-
                             confirmed_deaths.append(this)
                             infected_indices.remove(key)
                             d += 1
-                            current_x = x[this][frame]
-                            current_y = y[this][frame]
-                            for i in range(len(x[this][frame:])):
-                                x[this][i] = current_x
-                            for i in range(len(y[this][frame:])):
-                                y[this][i] = current_y
+
     line_deaths.append(d)
     line_recoveries.append(r)
-    return x, y
 
 
 def create_simulation_data(no_of_pts, dirs, sim_steps, xrange, yrange):
@@ -124,7 +117,6 @@ def animate():
     fig, ax, ax1, ax2, scatter_plots, line_plot, line_plots = setup_plots()
     xs, ys = create_simulation_data(no_of_points, directions, simulation_steps, [x_range_minus, x_range],
                                     [y_range_minus, y_range])
-
     infection_frame_map = {}
     confirmed_deaths = []
     confirmed_immune = []
@@ -133,8 +125,8 @@ def animate():
     line_infections = []
 
     def init():
-        ax.set_xlim(x_range_minus, x_range)
-        ax.set_ylim(y_range_minus, y_range)
+        ax.set_xlim(np.min(xs), np.max(xs))
+        ax.set_ylim(np.min(ys), np.max(ys))
 
     def update(frame, xss, yss, inf_map):
         x_values = []
@@ -158,16 +150,17 @@ def animate():
         line_infections.append(infected)
 
         # random choose persons which recover or die
-        xss, yss = random_condition_change(inf_map, confirmed_deaths, confirmed_immune, line_deaths, line_recoveries,
-                                scatter_plots, xss, yss, frame)
+        random_condition_change(inf_map, confirmed_deaths, confirmed_immune, line_deaths, line_recoveries,
+                                scatter_plots)
 
         frames_till_now = [i for i in range(frame)]
-        for s, n in zip(scatter_plots, range(no_of_points)):
+        for index, (s, n) in enumerate(zip(scatter_plots, range(no_of_points))):
             x = xss[n][frame]
             y = yss[n][frame]
             x_values.append(x)
             y_values.append(y)
-            s.set_data(x, y)
+            if index not in confirmed_deaths:
+                s.set_data(x, y)
 
         line_plot.set_data(frames_till_now, line_infections[:frame])
         line_plots[0].set_data(frames_till_now, line_recoveries[:frame])
@@ -178,9 +171,6 @@ def animate():
 
         ax2.set_xlim(0, simulation_steps)
         ax2.set_ylim(0, get_max_length(line_recoveries, line_deaths))
-
-        ax.set_xlim(min(x_values) - 1, max(x_values) + 1)
-        ax.set_ylim(min(y_values) - 1, max(y_values) + 1)
 
     ax.set_title('Pandemic Simulation')
     create_legend()
@@ -225,7 +215,7 @@ def define_args():
     parser.add_argument("-interval", default=200,
                         help="Define the the delay between frames in ms ",
                         type=int)
-    parser.add_argument("-save_simulation", default=True,
+    parser.add_argument("-save_simulation", default=False,
                         help="(True/False) Save simulation as gif",
                         type=bool)
     return parser.parse_args()

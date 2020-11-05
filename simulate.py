@@ -149,7 +149,7 @@ def animate():
         infected = len(infected_indices)
         line_infections.append(infected)
 
-        # random choose persons which recover or die
+        # randomly choose persons which recover or die
         random_condition_change(inf_map, confirmed_deaths, confirmed_immune, line_deaths, line_recoveries,
                                 scatter_plots)
 
